@@ -1,0 +1,24 @@
+{% extends "tasks/base.html" %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+<h2>Список задач</h2>
+<ul>
+    {% for task in tasks %}
+        <li>
+            <div class="tasks-panel">
+                <p class="name">Задача: {{ task.name }}</p>
+                <p class="status {{ tasks.status }} ">Статус: {{ task.get_status_display }}</p>
+                {% if task.deadline %}
+                    <p>Дедлайн: {{ task.deadline }}</p>
+                {% else %}
+                    <p>Дедлайн: не указан</p>
+                {% endif %}
+            </div>
+        </li>
+    {% empty %}
+        <li>Задач пока нет.</li>
+    {% endfor %}
+</ul>
+{% endblock %}
