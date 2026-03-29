@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.views.generic import ListView, CreateView, View
+from django.views.generic import ListView, CreateView, View, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import authenticate, login, logout
 
@@ -11,6 +11,10 @@ class Home(ListView):
     model = Task
     template_name = 'tasks/index.html'
     context_object_name = 'tasks'
+    
+    def get_queryset(self):
+        return Task.objects.filter(user=self.request.user)
+    
 
 class CreateTask(LoginRequiredMixin, CreateView):
     model = Task
@@ -24,6 +28,25 @@ class CreateTask(LoginRequiredMixin, CreateView):
     
     def get_queryset(self):
         return Task.objects.filret(user=self.request.user)
+
+
+class TaskUpdate(LoginRequiredMixin, UpdateView):
+    model = Task
+    fields = ['name', 'description', 'status', 'deadline']
+    template_name = 'tasks/update_task.html'
+    success_url = '/'
+    
+    def get_queryset(self):
+        return Task.objects.filter(user=self.request.user)
+    
+class TaskDelete(LoginRequiredMixin, DeleteView):
+    model = Task
+    template_name = 'tasks/delete_task.html'
+    success_url = '/'
+    
+    def get_queryset(self):
+        return Task.objects.filter(user=self.request.user)
+    
     
     
 def user_login(request):
@@ -47,10 +70,10 @@ def user_login(request):
     return render(request, 'tasks/login.html')
             
             
-
 def user_logout(request):
     logout(request)
     return redirect('login')
+
 
 class Register(View):
     
@@ -77,4 +100,3 @@ class Register(View):
             return redirect('home')
         
         return render(request, self.template_name, {'form': form})
-            
